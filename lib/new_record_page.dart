@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pa_recorder/directory_provider.dart';
 import 'package:pa_recorder/hads_questionnaire.dart';
+import 'package:pa_recorder/edit_record_page.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
@@ -206,7 +207,6 @@ class _NewRecordPageState extends State<NewRecordPage> {
       }
 
       final now = DateTime.now();
-      final dateStr = DateFormat('yyyy-MM-dd').format(now);
       final folderStr = DateFormat('yyyy-MM-dd-HH_mm').format(now);
       
       final outputDir = Directory(p.join(logseqPaPath, 'assets', 'pa-records', folderStr));
@@ -215,7 +215,7 @@ class _NewRecordPageState extends State<NewRecordPage> {
         await outputDir.create(recursive: true);
       }
 
-      final iniContent = _generateIniContent(dateStr, now);
+      final iniContent = _generateIniContent(now);
       final iniFile = File(p.join(outputDir.path, 'index.ini'));
       await iniFile.writeAsString(iniContent);
 
@@ -226,11 +226,21 @@ class _NewRecordPageState extends State<NewRecordPage> {
         SnackBar(content: Text('Record saved to ${outputDir.path}')),
       );
 
+      // Pop the current page first
       Navigator.pop(context);
+
+      // Then push the edit page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditRecordPage(contentFile: contentFile),
+        ),
+      );
     }
   }
 
-  String _generateIniContent(String dateStr, DateTime now) {
+  String _generateIniContent(DateTime now) {
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
     final properties = {
       'template': 'pa-record',
       'pa-title': _title,

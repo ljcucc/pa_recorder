@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:ini/ini.dart';
 import 'package:path/path.dart' as p;
+
+import 'edit_record_page.dart';
 
 class RecordDetailPage extends StatefulWidget {
   final Directory recordDirectory;
@@ -15,6 +18,7 @@ class RecordDetailPage extends StatefulWidget {
 class _RecordDetailPageState extends State<RecordDetailPage> {
   Map<String, String> _properties = {};
   String _content = '';
+  File? _contentFile;
 
   @override
   void initState() {
@@ -24,27 +28,47 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
 
   Future<void> _loadRecord() async {
     final iniFile = File(p.join(widget.recordDirectory.path, 'index.ini'));
-    final contentFile = File(p.join(widget.recordDirectory.path, 'content.md'));
+    _contentFile = File(p.join(widget.recordDirectory.path, 'content.md'));
 
+    Map<String, String> properties = {};
     if (await iniFile.exists()) {
       final config = Config.fromStrings(await iniFile.readAsLines());
-      setState(() {
-        _properties = (config.items('properties') ?? []).fold<Map<String, String>>(
-          {},
-          (map, item) {
-            if (item.length >= 2 && item[0] != null) {
-              map[item[0]!] = item[1] ?? '';
-            }
-            return map;
-          },
-        );
-      });
+      properties = (config.items('properties') ?? []).fold<Map<String, String>>(
+        {},
+        (map, item) {
+          if (item.length >= 2 && item[0] != null) {
+            map[item[0]!] = item[1] ?? '';
+          }
+          return map;
+        },
+      );
     }
 
-    if (await contentFile.exists()) {
+    String content = '';
+    if (await _contentFile!.exists()) {
+      content = await _contentFile!.readAsString();
+    }
+
+    if (mounted) {
       setState(() {
-        _content = contentFile.readAsStringSync();
+        _properties = properties;
+        _content = content;
       });
+    }
+  }
+
+  void _navigateToEditPage() async {
+    if (_contentFile == null) return;
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditRecordPage(contentFile: _contentFile!),
+      ),
+    );
+
+    if (result == true) {
+      _loadRecord();
     }
   }
 
@@ -56,20 +80,29 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
       ),
       body: _properties.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                ..._properties.entries.map((entry) {
-                  return ListTile(
-                    title: Text(entry.key),
-                    subtitle: Text(entry.value),
-                  );
-                }).toList(),
-                const Divider(),
-                const Text('Content:'),
-                Text(_content),
-              ],
+          : RefreshIndicator(
+        onRefresh: _loadRecord,
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            ..._properties.entries.map((entry) {
+              return ListTile(
+                title: Text(entry.key),
+                subtitle: Text(entry.value),
+              );
+            }).toList(),
+            const Divider(),
+            MarkdownBody(
+              data: _content,
+              selectable: true,
             ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToEditPage,
+        child: const Icon(Icons.edit),
+      ),
     );
   }
 }
