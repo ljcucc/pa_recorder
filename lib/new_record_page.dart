@@ -208,7 +208,7 @@ class _NewRecordPageState extends State<NewRecordPage> {
 
       final now = DateTime.now();
       final folderStr = DateFormat('yyyy-MM-dd-HH_mm').format(now);
-      
+
       final outputDir = Directory(p.join(logseqPaPath, 'assets', 'pa-records', folderStr));
 
       if (!await outputDir.exists()) {
@@ -219,7 +219,8 @@ class _NewRecordPageState extends State<NewRecordPage> {
       final iniFile = File(p.join(outputDir.path, 'index.ini'));
       await iniFile.writeAsString(iniContent);
 
-      final contentFile = File(p.join(outputDir.path, 'content.md'));
+      final dateStr = DateFormat('yyyy-MM-dd-HH_mm').format(now);
+      final contentFile = File(p.join(outputDir.path, 'pa-records___${dateStr}___content.md'));
       await contentFile.writeAsString('- Enter content here\n');
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -244,23 +245,24 @@ class _NewRecordPageState extends State<NewRecordPage> {
     final properties = {
       'template': 'pa-record',
       'pa-title': _title,
-      'pa-date': '[[$dateStr]]',
+      'pa-date': '$dateStr',
       'pa-time': DateFormat('HH:mm').format(now),
-      'pa-mood': '[[pa-mood/${_moodScale[_mood]!}]]',
-      'pa-emotions': _emotions.map((e) => '[[pa-emotions/$e]]').join(', '),
-      'pa-factor': '[[pa-factor/$_factor]]',
+      'pa-mood': '${_moodScale[_mood]!}',
+      'pa-emotions': _emotions.map((e) => '$e').join(', '),
+      'pa-factor': '$_factor',
       'pa-type': 'personal'
     };
 
     if (_hadsScores != null) {
       properties['pa-hads-a'] = _hadsScores!['A'].toString();
       properties['pa-hads-d'] = _hadsScores!['D'].toString();
-      properties['pa-type'] = 'personal [[pa-type/Clinical]]';
+      properties['pa-type'] = 'personal, clinical';
     }
 
     final buffer = StringBuffer();
     buffer.writeln('[header]');
     buffer.writeln('template = pa-record');
+    buffer.writeln('schema = pa-record');
     buffer.writeln('[properties]');
     properties.forEach((key, value) {
       if (key != 'template') {
