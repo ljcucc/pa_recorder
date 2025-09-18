@@ -16,6 +16,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 *   [Flutter SDK](https://flutter.dev/docs/get-started/install)
+*   [FVM (Flutter Version Management)](https://fvm.app/docs/getting_started/installation)
 *   A code editor like [VS Code](https://code.visualstudio.com/) with the Flutter extension.
 
 ### Installation
@@ -26,14 +27,20 @@ These instructions will get you a copy of the project up and running on your loc
     cd pa_recorder
     ```
 
-2.  **Get Flutter dependencies:**
+2.  **Install and use the correct Flutter version with FVM:**
     ```bash
-    flutter pub get
+    fvm install
+    fvm use
     ```
 
-3.  **Run the application:**
+3.  **Get Flutter dependencies:**
     ```bash
-    flutter run
+    fvm flutter pub get
+    ```
+
+4.  **Run the application:**
+    ```bash
+    fvm flutter run
     ```
 
 ## Usage
