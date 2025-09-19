@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:pa_recorder/browse_records_page.dart';
+import 'package:pa_recorder/pages/browse_records_page.dart';
 import 'package:pa_recorder/directory_provider.dart';
-import 'package:pa_recorder/new_record_page.dart';
+import 'package:pa_recorder/pages/new_record_page.dart';
+import 'package:pa_recorder/data/record_repository.dart';
+import 'package:pa_recorder/data/file_system_record_repository.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => DirectoryProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => DirectoryProvider()),
+        Provider<RecordRepository>(
+          create: (context) => FileSystemRecordRepository(
+            context.read<DirectoryProvider>(),
+          ),
+        ),
+      ],
       child: const PARecorderApp(),
     ),
   );
@@ -41,7 +50,8 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.folder_open),
-            onPressed: () => context.read<DirectoryProvider>().selectDirectory(),
+            onPressed: () =>
+                context.read<DirectoryProvider>().selectDirectory(),
           ),
         ],
       ),

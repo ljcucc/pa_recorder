@@ -1,20 +1,19 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pa_recorder/directory_provider.dart';
 import 'package:pa_recorder/hads_questionnaire.dart';
-import 'package:pa_recorder/edit_record_page.dart';
-import 'package:path/path.dart' as p;
+import 'package:pa_recorder/pages/edit_record_page.dart';
+import 'package:pa_recorder/data/record_repository.dart'; // New import
 import 'package:provider/provider.dart';
 
 class NewRecordPage extends StatefulWidget {
   const NewRecordPage({super.key});
 
   @override
-  _NewRecordPageState createState() => _NewRecordPageState();
+  NewRecordPageState createState() => NewRecordPageState();
 }
 
-class _NewRecordPageState extends State<NewRecordPage> {
+class NewRecordPageState extends State<NewRecordPage> {
   final _formKey = GlobalKey<FormState>();
   String? _mood;
   final List<String> _emotions = [];
@@ -37,7 +36,17 @@ class _NewRecordPageState extends State<NewRecordPage> {
   final List<String> _neutralEmotions = ["淡定", "放鬆", "無聊", "平靜"];
   final List<String> _unpleasantEmotions = ["傷心", "憤怒", "焦慮", "擔憂", "疲憊", "失望"];
 
-  final List<String> _factors = ["工作", "家庭", "健康", "人際關係", "金錢", "天氣", "休閒活動", "學校", "其他"];
+  final List<String> _factors = [
+    "工作",
+    "家庭",
+    "健康",
+    "人際關係",
+    "金錢",
+    "天氣",
+    "休閒活動",
+    "學校",
+    "其他"
+  ];
 
   List<String> get _currentEmotions {
     if (_mood == null) {
@@ -97,7 +106,7 @@ class _NewRecordPageState extends State<NewRecordPage> {
 
   Widget _buildMoodSelector() {
     return DropdownButtonFormField<String>(
-      value: _mood,
+      initialValue: _mood, // Changed from value
       hint: const Text('你現在的感覺如何？'),
       onChanged: (String? newValue) {
         setState(() {
@@ -144,7 +153,7 @@ class _NewRecordPageState extends State<NewRecordPage> {
 
   Widget _buildFactorSelector() {
     return DropdownButtonFormField<String>(
-      value: _factor,
+      initialValue: _factor, // Changed from value
       hint: const Text('是什麼對你影響最大？'),
       onChanged: (String? newValue) {
         setState(() {
@@ -196,10 +205,10 @@ class _NewRecordPageState extends State<NewRecordPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      final recordRepository = context.read<RecordRepository>();
       final directoryProvider = context.read<DirectoryProvider>();
-      final logseqPaPath = directoryProvider.directoryPath;
 
-      if (logseqPaPath == null) {
+      if (directoryProvider.directoryPath == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please select a directory first.')),
         );
@@ -209,67 +218,62 @@ class _NewRecordPageState extends State<NewRecordPage> {
       final now = DateTime.now();
       final folderStr = DateFormat('yyyy-MM-dd-HH_mm').format(now);
 
-      final outputDir = Directory(p.join(logseqPaPath, 'assets', 'pa-records', folderStr));
+      final Map<String, String> metadata = _generateMetadata(now);
 
-      if (!await outputDir.exists()) {
-        await outputDir.create(recursive: true);
+      final newRecord = Record(
+        id: folderStr,
+        title: _title ?? 'Untitled Record',
+        content: '- Enter content here\n',
+        metadata: metadata,
+        directory: null, // Now nullable
+      );
+
+      try {
+        await recordRepository.createRecord(newRecord);
+
+        if (!mounted) return; // Check mounted before using context
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Record saved to ${newRecord.id}')),
+        );
+
+        if (!mounted) return; // Check mounted before using context
+        // Pop the current page first
+        Navigator.pop(context);
+
+        if (!mounted) return; // Check mounted before using context
+        // Then push the edit page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditRecordPage(record: newRecord),
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return; // Check mounted before using context
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save record: $e')),
+        );
       }
-
-      final iniContent = _generateIniContent(now);
-      final iniFile = File(p.join(outputDir.path, 'index.ini'));
-      await iniFile.writeAsString(iniContent);
-
-      final dateStr = DateFormat('yyyy-MM-dd-HH_mm').format(now);
-      final contentFile = File(p.join(outputDir.path, 'pa-records___${dateStr}___content.md'));
-      await contentFile.writeAsString('- Enter content here\n');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Record saved to ${outputDir.path}')),
-      );
-
-      // Pop the current page first
-      Navigator.pop(context);
-
-      // Then push the edit page
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditRecordPage(contentFile: contentFile),
-        ),
-      );
     }
   }
 
-  String _generateIniContent(DateTime now) {
+  Map<String, String> _generateMetadata(DateTime now) {
     final dateStr = DateFormat('yyyy-MM-dd').format(now);
-    final properties = {
-      'template': 'pa-record',
-      'pa-title': _title,
-      'pa-date': '$dateStr',
+    final Map<String, String> metadata = {
+      'pa-title': _title ?? 'Untitled Record',
+      'pa-date': dateStr,
       'pa-time': DateFormat('HH:mm').format(now),
-      'pa-mood': '${_moodScale[_mood]!}',
-      'pa-emotions': _emotions.map((e) => '$e').join(', '),
-      'pa-factor': '$_factor',
-      'pa-type': 'personal'
+      'pa-mood': _moodScale[_mood]!,
+      'pa-emotions': _emotions.join(', '),
+      'pa-factor': _factor!,
+      'pa-type': 'personal',
     };
 
     if (_hadsScores != null) {
-      properties['pa-hads-a'] = _hadsScores!['A'].toString();
-      properties['pa-hads-d'] = _hadsScores!['D'].toString();
-      properties['pa-type'] = 'personal, clinical';
+      metadata['pa-hads-a'] = _hadsScores!['A'].toString();
+      metadata['pa-hads-d'] = _hadsScores!['D'].toString();
+      metadata['pa-type'] = 'personal, clinical';
     }
-
-    final buffer = StringBuffer();
-    buffer.writeln('[header]');
-    buffer.writeln('template = pa-record');
-    buffer.writeln('schema = pa-record');
-    buffer.writeln('[properties]');
-    properties.forEach((key, value) {
-      if (key != 'template') {
-        buffer.writeln('$key = $value');
-      }
-    });
-
-    return buffer.toString();
+    return metadata;
   }
 }

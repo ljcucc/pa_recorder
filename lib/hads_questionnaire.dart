@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 class HADSQuestion {
   final String scale;
@@ -102,10 +101,10 @@ class HADSQuestionnaire extends StatefulWidget {
   const HADSQuestionnaire({super.key, required this.onCompleted});
 
   @override
-  _HADSQuestionnaireState createState() => _HADSQuestionnaireState();
+  HADSQuestionnaireState createState() => HADSQuestionnaireState();
 }
 
-class _HADSQuestionnaireState extends State<HADSQuestionnaire> {
+class HADSQuestionnaireState extends State<HADSQuestionnaire> {
   final List<HADSQuestion> _questions = List.from(hadsQuestions)..shuffle();
   final Map<int, int> _answers = {};
   int _currentQuestionIndex = 0;
@@ -127,18 +126,28 @@ class _HADSQuestionnaireState extends State<HADSQuestionnaire> {
         Text(question.text),
         const SizedBox(height: 10),
         ...shuffledChoices.map((choice) {
-          return RadioListTile<int>(
-            title: Text(choice['text'] as String),
-            value: choice['score'] as int,
-            groupValue: _answers[_currentQuestionIndex],
-            onChanged: (int? value) {
+          final score = choice['score'] as int;
+          final text = choice['text'] as String;
+          return ListTile(
+            title: Text(text),
+            leading: Radio<int>(
+              value: score,
+              groupValue: _answers[_currentQuestionIndex],
+              onChanged: (int? newValue) {
+                setState(() {
+                  _answers[_currentQuestionIndex] = newValue!;
+                  _nextQuestion();
+                });
+              },
+            ),
+            onTap: () {
               setState(() {
-                _answers[_currentQuestionIndex] = value!;
+                _answers[_currentQuestionIndex] = score;
                 _nextQuestion();
               });
             },
           );
-        }).toList(),
+        }),
       ],
     );
   }

@@ -1,19 +1,18 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pa_recorder/directory_provider.dart';
-import 'package:pa_recorder/record_detail_page.dart';
-import 'package:path/path.dart' as p;
+import 'package:pa_recorder/pages/record_detail_page.dart';
+import 'package:pa_recorder/data/record_repository.dart'; // New import
 import 'package:provider/provider.dart';
 
 class BrowseRecordsPage extends StatefulWidget {
   const BrowseRecordsPage({super.key});
 
   @override
-  _BrowseRecordsPageState createState() => _BrowseRecordsPageState();
+  BrowseRecordsPageState createState() => BrowseRecordsPageState();
 }
 
-class _BrowseRecordsPageState extends State<BrowseRecordsPage> {
-  List<Directory> _recordDirectories = [];
+class BrowseRecordsPageState extends State<BrowseRecordsPage> {
+  List<Record> _records = []; // Changed from List<Directory>
 
   @override
   void didChangeDependencies() {
@@ -22,34 +21,24 @@ class _BrowseRecordsPageState extends State<BrowseRecordsPage> {
   }
 
   Future<void> _loadRecordDirectories() async {
+    final recordRepository = context.read<RecordRepository>();
     final directoryProvider = context.read<DirectoryProvider>();
-    final logseqPaPath = directoryProvider.directoryPath;
 
-    if (logseqPaPath == null) {
+    if (directoryProvider.directoryPath == null) {
       if (mounted) {
         setState(() {
-          _recordDirectories = [];
+          _records = [];
         });
       }
       return;
     }
 
-    final recordsDir = Directory(p.join(logseqPaPath, 'assets', 'pa-records'));
-
-    if (await recordsDir.exists()) {
-      final directories = await recordsDir.list().where((item) => item is Directory).cast<Directory>().toList();
-      directories.sort((a, b) => b.path.compareTo(a.path)); // Sort by name, descending
-      if (mounted) {
-        setState(() {
-          _recordDirectories = directories;
-        });
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          _recordDirectories = [];
-        });
-      }
+    final fetchedRecords = await recordRepository.getAllRecords();
+    _records = [];
+    if (mounted) {
+      setState(() {
+        _records = fetchedRecords;
+      });
     }
   }
 
@@ -89,20 +78,21 @@ class _BrowseRecordsPageState extends State<BrowseRecordsPage> {
                 ],
               ),
             )
-          : _recordDirectories.isEmpty
-              ? const Center(child: Text('No records found in the selected directory.'))
+          : _records.isEmpty
+              ? const Center(
+                  child: Text('No records found in the selected directory.'))
               : ListView.builder(
-                  itemCount: _recordDirectories.length,
+                  itemCount: _records.length,
                   itemBuilder: (context, index) {
-                    final directory = _recordDirectories[index];
-                    final directoryName = p.basename(directory.path);
+                    final record = _records[index];
                     return ListTile(
-                      title: Text(directoryName),
+                      title: Text(record.title),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RecordDetailPage(recordDirectory: directory),
+                            builder: (context) =>
+                                RecordDetailPage(record: record),
                           ),
                         );
                       },
