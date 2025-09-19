@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // New import for Google Fonts
 import 'package:pa_recorder/data/record_repository.dart'; // New import
 import 'package:provider/provider.dart'; // New import
 
@@ -64,6 +65,7 @@ class EditRecordPageState extends State<EditRecordPage> {
           controller: _textController,
           maxLines: null, // Allows for multiline input
           expands: true, // Expands to fill the available space
+          style: GoogleFonts.ibmPlexMono(), // IBM Plex Mono font from Google Fonts
           decoration: const InputDecoration(
             hintText: 'Enter your content here...',
             border: InputBorder.none,
