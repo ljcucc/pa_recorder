@@ -28,7 +28,12 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
 
   Future<void> _loadRecord() async {
     final iniFile = File(p.join(widget.recordDirectory.path, 'index.ini'));
-    _contentFile = File(p.join(widget.recordDirectory.path, 'content.md'));
+
+    final recordName =
+        widget.recordDirectory.uri.pathSegments.where((e) => e.isNotEmpty).last;
+
+    _contentFile = File(p.join(widget.recordDirectory.path,
+        'pa-records___${recordName}___content.md'));
 
     Map<String, String> properties = {};
     if (await iniFile.exists()) {
@@ -81,24 +86,24 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
       body: _properties.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-        onRefresh: _loadRecord,
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            ..._properties.entries.map((entry) {
-              return ListTile(
-                title: Text(entry.key),
-                subtitle: Text(entry.value),
-              );
-            }).toList(),
-            const Divider(),
-            MarkdownBody(
-              data: _content,
-              selectable: true,
+              onRefresh: _loadRecord,
+              child: ListView(
+                padding: const EdgeInsets.all(16.0),
+                children: [
+                  ..._properties.entries.map((entry) {
+                    return ListTile(
+                      title: Text(entry.key),
+                      subtitle: Text(entry.value),
+                    );
+                  }).toList(),
+                  const Divider(),
+                  MarkdownBody(
+                    data: _content,
+                    selectable: true,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToEditPage,
         child: const Icon(Icons.edit),
