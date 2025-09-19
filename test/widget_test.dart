@@ -12,10 +12,11 @@ import 'package:pa_recorder/main.dart';
 import 'package:pa_recorder/directory_provider.dart';
 import 'package:pa_recorder/data/record_repository.dart';
 import 'package:pa_recorder/data/file_system_record_repository.dart';
+import 'package:pa_recorder/pages/browse_records_page.dart'; // Add this import
 
 void main() {
   group('PARecorderApp Widget Tests', () {
-    testWidgets('App starts and displays HomePage',
+    testWidgets('App starts and displays BrowseRecordsPage',
         (WidgetTester tester) async {
       // Build our app and trigger a frame.
       await tester.pumpWidget(
@@ -32,15 +33,9 @@ void main() {
         ),
       );
 
-      // Verify that HomePage is displayed.
-      expect(find.byType(HomePage), findsOneWidget);
-      expect(find.text('PA Recorder'), findsOneWidget);
+      // Verify that BrowseRecordsPage is displayed.
+      expect(find.byType(BrowseRecordsPage), findsOneWidget);
+      expect(find.text('Browse Records'), findsOneWidget);
     });
-
-    // You can add more specific tests here for different pages and functionalities
-    // For example:
-    // testWidgets('Selecting directory shows New Record and Browse Records buttons', (WidgetTester tester) async {
-    //   // ... test logic ...
-    // });
   });
 }

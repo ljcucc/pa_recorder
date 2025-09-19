@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pa_recorder/directory_provider.dart';
 import 'package:pa_recorder/pages/record_detail_page.dart';
 import 'package:pa_recorder/data/record_repository.dart'; // New import
+import 'package:pa_recorder/pages/new_record_page.dart';
 import 'package:provider/provider.dart';
 
 class BrowseRecordsPage extends StatefulWidget {
@@ -99,6 +100,18 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
                     );
                   },
                 ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NewRecordPage(),
+            ),
+          );
+          _loadRecordDirectories(); // Refresh records after returning from NewRecordPage
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
