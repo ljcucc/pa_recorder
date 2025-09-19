@@ -2,6 +2,8 @@
 
 PA Recorder is a Flutter-based application designed to help users create, browse, and manage psychological records (pa-records) in a structured format. It serves as a user-friendly UI version of the `generate_pa_record.py` tool, aiming to streamline the process of generating records compatible with `logseq_gen` for markdown output.
 
+> Please use the compatible file structure, see: https://github.com/ljcucc/logseq-pa-template
+
 ## Features
 
 *   **Directory Selection**: Easily select your `logseq-pa` directory to manage your records.
