@@ -13,7 +13,7 @@ class Record {
   final String id; // Directory name
   final String title;
   final String content;
-  final Map<String, String> metadata; // From index.ini
+  final Map<String, Map<String, String>> metadata; // From index.ini, now with sections
   final Directory? directory; // Reference to the record's directory, now nullable
 
   Record({

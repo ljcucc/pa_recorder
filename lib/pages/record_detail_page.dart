@@ -21,7 +21,7 @@ class RecordDetailPageState extends State<RecordDetailPage> {
   @override
   void initState() {
     super.initState();
-    _properties = widget.record.metadata;
+    _properties = widget.record.metadata['properties'] ?? {};
     _content = widget.record.content;
   }
 
@@ -40,7 +40,7 @@ class RecordDetailPageState extends State<RecordDetailPage> {
           await recordRepository.getRecordById(widget.record.id);
       if (updatedRecord != null && mounted) {
         setState(() {
-          _properties = updatedRecord.metadata;
+          _properties = updatedRecord.metadata['properties'] ?? {};
           _content = updatedRecord.content;
         });
       }
@@ -61,7 +61,7 @@ class RecordDetailPageState extends State<RecordDetailPage> {
               await recordRepository.getRecordById(widget.record.id);
           if (updatedRecord != null && mounted) {
             setState(() {
-              _properties = updatedRecord.metadata;
+              _properties = updatedRecord.metadata['properties'] ?? {};
               _content = updatedRecord.content;
             });
           }

@@ -13,8 +13,9 @@ class RecordListItem extends StatelessWidget {
     required this.onTap,
   });
 
-  String _getFormattedDate(Map<String, String> metadata) {
-    final dateString = metadata['pa-date'] ?? metadata['date'];
+  String _getFormattedDate(Map<String, Map<String, String>> metadata) {
+    final properties = metadata['properties'] ?? {};
+    final dateString = properties['pa-date'] ?? properties['date'];
     if (dateString != null && dateString.isNotEmpty) {
       try {
         // Assuming date format is YYYY-MM-DD

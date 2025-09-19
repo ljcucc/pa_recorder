@@ -37,12 +37,14 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
 
     final fetchedRecords = await recordRepository.getAllRecords();
     fetchedRecords.sort((a, b) {
-      final dateA = a.metadata['pa-date'] ?? '';
-      final timeA = a.metadata['pa-time'] ?? '00:00'; // Default to midnight if time is missing
+      final propertiesA = a.metadata['properties'] ?? {};
+      final dateA = propertiesA['pa-date'] ?? '';
+      final timeA = propertiesA['pa-time'] ?? '00:00'; // Default to midnight if time is missing
       final dateTimeA = DateTime.tryParse('$dateA $timeA');
 
-      final dateB = b.metadata['pa-date'] ?? '';
-      final timeB = b.metadata['pa-time'] ?? '00:00'; // Default to midnight if time is missing
+      final propertiesB = b.metadata['properties'] ?? {};
+      final dateB = propertiesB['pa-date'] ?? '';
+      final timeB = propertiesB['pa-time'] ?? '00:00'; // Default to midnight if time is missing
       final dateTimeB = DateTime.tryParse('$dateB $timeB');
 
       if (dateTimeA == null && dateTimeB == null) {

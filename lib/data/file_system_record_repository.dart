@@ -37,17 +37,18 @@ class FileSystemRecordRepository implements RecordRepository {
           File(p.join(dir.path, 'pa-records___${id}___content.md'));
 
       String title = id; // Default title
-      Map<String, String> metadata = {};
+      Map<String, Map<String, String>> metadata = {};
       if (await iniFile.exists()) {
         final config = Config.fromStrings(await iniFile.readAsLines());
         for (final section in config.sections()) {
+          metadata[section] = {};
           for (final item in config.items(section) ?? []) {
             if (item.length == 2 && item[0] != null && item[1] != null) {
-              metadata[item[0]!] = item[1]!;
+              metadata[section]![item[0]!] = item[1]!;
             }
           }
         }
-        title = metadata['pa-title'] ?? id;
+        title = metadata['properties']?['pa-title'] ?? id;
       }
 
       String content = '';
@@ -83,17 +84,18 @@ class FileSystemRecordRepository implements RecordRepository {
         File(p.join(recordDir.path, 'pa-records___${id}___content.md'));
 
     String title = id;
-    Map<String, String> metadata = {};
+    Map<String, Map<String, String>> metadata = {};
     if (await iniFile.exists()) {
       final config = Config.fromStrings(await iniFile.readAsLines());
-      for (final section in config.sections as Iterable<String>) {
+      for (final section in config.sections()) {
+        metadata[section] = {};
         for (final item in config.items(section) ?? []) {
           if (item.length == 2 && item[0] != null && item[1] != null) {
-            metadata[item[0]!] = item[1]!;
+            metadata[section]![item[0]!] = item[1]!;
           }
         }
       }
-      title = metadata['pa-title'] ?? id;
+      title = metadata['properties']?['pa-title'] ?? id;
     }
 
     String content = '';
@@ -121,10 +123,11 @@ class FileSystemRecordRepository implements RecordRepository {
 
     final iniFile = File(p.join(outputDir.path, 'index.ini'));
     final StringBuffer buffer = StringBuffer();
-    buffer.writeln('template = pa-record');
-    buffer.writeln('schema = pa-record');
-    record.metadata.forEach((key, value) {
-      buffer.writeln('$key = $value');
+    record.metadata.forEach((section, properties) {
+      buffer.writeln('[$section]');
+      properties.forEach((key, value) {
+        buffer.writeln('$key = $value');
+      });
     });
     await iniFile.writeAsString(buffer.toString());
 

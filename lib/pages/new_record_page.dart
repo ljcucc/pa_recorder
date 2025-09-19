@@ -218,7 +218,7 @@ class NewRecordPageState extends State<NewRecordPage> {
       final now = DateTime.now();
       final folderStr = DateFormat('yyyy-MM-dd-HH_mm').format(now);
 
-      final Map<String, String> metadata = _generateMetadata(now);
+      final Map<String, Map<String, String>> metadata = _generateMetadata(now);
 
       final newRecord = Record(
         id: folderStr,
@@ -257,9 +257,9 @@ class NewRecordPageState extends State<NewRecordPage> {
     }
   }
 
-  Map<String, String> _generateMetadata(DateTime now) {
+  Map<String, Map<String, String>> _generateMetadata(DateTime now) {
     final dateStr = DateFormat('yyyy-MM-dd').format(now);
-    final Map<String, String> metadata = {
+    final Map<String, String> properties = {
       'pa-title': _title ?? 'Untitled Record',
       'pa-date': dateStr,
       'pa-time': DateFormat('HH:mm').format(now),
@@ -270,10 +270,17 @@ class NewRecordPageState extends State<NewRecordPage> {
     };
 
     if (_hadsScores != null) {
-      metadata['pa-hads-a'] = _hadsScores!['A'].toString();
-      metadata['pa-hads-d'] = _hadsScores!['D'].toString();
-      metadata['pa-type'] = 'personal, clinical';
+      properties['pa-hads-a'] = _hadsScores!['A'].toString();
+      properties['pa-hads-d'] = _hadsScores!['D'].toString();
+      properties['pa-type'] = 'personal, clinical';
     }
-    return metadata;
+
+    return {
+      'header': {
+        'template': 'pa-record',
+        'schema': 'pa-record',
+      },
+      'properties': properties,
+    };
   }
 }
