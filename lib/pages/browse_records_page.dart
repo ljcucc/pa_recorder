@@ -3,6 +3,7 @@ import 'package:pa_recorder/directory_provider.dart';
 import 'package:pa_recorder/pages/record_detail_page.dart';
 import 'package:pa_recorder/data/record_repository.dart'; // New import
 import 'package:pa_recorder/pages/new_record_page.dart';
+import 'package:pa_recorder/widgets/record_list_item.dart'; // New import
 import 'package:provider/provider.dart';
 
 class BrowseRecordsPage extends StatefulWidget {
@@ -35,6 +36,20 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
     }
 
     final fetchedRecords = await recordRepository.getAllRecords();
+    fetchedRecords.sort((a, b) {
+      final dateA = DateTime.tryParse(a.metadata['pa-date'] ?? '');
+      final dateB = DateTime.tryParse(b.metadata['pa-date'] ?? '');
+
+      if (dateA == null && dateB == null) {
+        return 0;
+      } else if (dateA == null) {
+        return 1; // Null dates go to the end
+      } else if (dateB == null) {
+        return -1; // Null dates go to the end
+      } else {
+        return dateB.compareTo(dateA); // Sort in descending order (newest first)
+      }
+    });
     _records = [];
     if (mounted) {
       setState(() {
@@ -86,8 +101,8 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
                   itemCount: _records.length,
                   itemBuilder: (context, index) {
                     final record = _records[index];
-                    return ListTile(
-                      title: Text(record.title),
+                    return RecordListItem(
+                      record: record,
                       onTap: () {
                         Navigator.push(
                           context,
