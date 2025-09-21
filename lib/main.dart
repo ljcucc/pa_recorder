@@ -31,6 +31,7 @@ class PARecorderApp extends StatelessWidget {
       title: 'PA Recorder',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'JFOpenshuninn',
       ),
       home: const BrowseRecordsPage(),
     );

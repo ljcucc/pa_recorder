@@ -110,14 +110,15 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
                     final record = _records[index];
                     return RecordListItem(
                       record: record,
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
                                 RecordDetailPage(record: record),
                           ),
                         );
+                        _loadRecordDirectories(); // Refresh records after returning from RecordDetailPage
                       },
                     );
                   },
