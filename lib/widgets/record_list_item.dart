@@ -42,9 +42,11 @@ class RecordListItem extends StatelessWidget {
     final formattedDate = _getFormattedDate(record.metadata);
     final contentPreview = _getContentPreview(record.content);
 
-    return Card(
+    return Card.filled(
+      elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         title: Text(
           record.title,
           style: const TextStyle(fontWeight: FontWeight.bold),

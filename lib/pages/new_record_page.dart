@@ -83,7 +83,7 @@ class NewRecordPageState extends State<NewRecordPage> {
             const SizedBox(height: 20),
             _buildHadsSection(),
             const SizedBox(height: 20),
-            ElevatedButton(
+            FilledButton.tonal(
               onPressed: _saveRecord,
               child: const Text('Save'),
             ),
@@ -190,7 +190,7 @@ class NewRecordPageState extends State<NewRecordPage> {
         },
       );
     } else {
-      return ElevatedButton(
+      return FilledButton.tonal(
         onPressed: () {
           setState(() {
             _showHads = true;

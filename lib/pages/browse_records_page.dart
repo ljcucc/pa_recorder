@@ -91,7 +91,7 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
                 children: [
                   const Text('Please select a logseq-pa directory.'),
                   const SizedBox(height: 20),
-                  ElevatedButton(
+                  FilledButton.tonal(
                     onPressed: () async {
                       await context.read<DirectoryProvider>().selectDirectory();
                       _loadRecordDirectories();
@@ -104,24 +104,29 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
           : _records.isEmpty
               ? const Center(
                   child: Text('No records found in the selected directory.'))
-              : ListView.builder(
-                  itemCount: _records.length,
-                  itemBuilder: (context, index) {
-                    final record = _records[index];
-                    return RecordListItem(
-                      record: record,
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RecordDetailPage(record: record),
-                          ),
+              : Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: ListView.builder(
+                      itemCount: _records.length,
+                      itemBuilder: (context, index) {
+                        final record = _records[index];
+                        return RecordListItem(
+                          record: record,
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RecordDetailPage(record: record),
+                              ),
+                            );
+                            _loadRecordDirectories(); // Refresh records after returning from RecordDetailPage
+                          },
                         );
-                        _loadRecordDirectories(); // Refresh records after returning from RecordDetailPage
                       },
-                    );
-                  },
+                    ),
+                  ),
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
