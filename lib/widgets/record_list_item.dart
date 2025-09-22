@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pa_recorder/data/record_repository.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import 'package:flutter_markdown/flutter_markdown.dart'; // New import
 
 class RecordListItem extends StatelessWidget {
   final Record record;
@@ -29,18 +28,24 @@ class RecordListItem extends StatelessWidget {
     return 'No Date';
   }
 
-  String _getContentPreview(String content, { int maxLines = 3}) {
-    final lines = content.split('\n');
-    if (lines.length <= maxLines) {
-      return content.trim();
-    }
-    return '${lines.take(maxLines).join('\n').trim()}...';
+  String _getMood(Map<String, Map<String, String>> metadata) {
+    final properties = metadata['properties'] ?? {};
+    return 'Mood: ${properties['pa-mood'] ?? 'N/A'}';
+  }
+
+  String _getFactor(Map<String, Map<String, String>> metadata) {
+    final properties = metadata['properties'] ?? {};
+    return 'Factor: ${properties['pa-factor'] ?? 'N/A'}';
+  }
+
+  String _getEmotions(Map<String, Map<String, String>> metadata) {
+    final properties = metadata['properties'] ?? {};
+    return 'Emotions: ${properties['pa-emotions'] ?? 'N/A'}';
   }
 
   @override
   Widget build(BuildContext context) {
     final formattedDate = _getFormattedDate(record.metadata);
-    final contentPreview = _getContentPreview(record.content);
 
     return Card.filled(
       elevation: 0,
@@ -55,13 +60,16 @@ class RecordListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4.0),
-            MarkdownBody(
-              data: contentPreview,
-              shrinkWrap: true,
-              softLineBreak: true,
-              styleSheet: MarkdownStyleSheet(
-                p: TextStyle(color: Colors.grey[700]),
-              ),
+            Text(
+              _getMood(record.metadata),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              _getFactor(record.metadata),
+              style: const TextStyle(fontStyle: FontStyle.italic),
+            ),
+            Text(
+              _getEmotions(record.metadata),
             ),
             const SizedBox(height: 8.0),
             Text(
