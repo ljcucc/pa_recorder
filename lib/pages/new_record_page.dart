@@ -237,22 +237,13 @@ class NewRecordPageState extends State<NewRecordPage> {
         );
 
         if (!mounted) return; // Check mounted before using context
-        // Pop the current page first
-        Navigator.pop(context);
-
-        if (!mounted) return; // Check mounted before using context
-        // Then push the edit page
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditRecordPage(record: newRecord),
-          ),
-        );
+        Navigator.pop(context, newRecord); // Pop with the new record
       } catch (e) {
         if (!mounted) return; // Check mounted before using context
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to save record: $e')),
         );
+        Navigator.pop(context, null); // Pop with null on failure
       }
     }
   }
