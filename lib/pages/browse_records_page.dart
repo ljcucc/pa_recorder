@@ -69,49 +69,63 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
   Widget build(BuildContext context) {
     final directoryProvider = context.watch<DirectoryProvider>();
 
-    return directoryProvider.directoryPath == null
-        ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Please select a logseq-pa directory.'),
-                const SizedBox(height: 20),
-                FilledButton.tonal(
-                  onPressed: () async {
-                    await context.read<DirectoryProvider>().selectDirectory();
-                    _loadRecordDirectories();
-                  },
-                  child: const Text('Select Directory'),
-                ),
-              ],
-            ),
-          )
-        : _records.isEmpty
-            ? const Center(
-                child: Text('No records found in the selected directory.'))
-            : Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 800),
-                  child: ListView.builder(
-                    itemCount: _records.length,
-                    itemBuilder: (context, index) {
-                      final record = _records[index];
-                      return RecordListItem(
-                        record: record,
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  RecordDetailPage(record: record),
-                            ),
-                          );
-                          _loadRecordDirectories(); // Refresh records after returning from RecordDetailPage
-                        },
-                      );
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('PA Recorder'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.folder_open),
+            onPressed: () async {
+              await context.read<DirectoryProvider>().selectDirectory();
+              // The child (BrowseRecordsPage) will react to this change via its watch on DirectoryProvider.
+            },
+          ),
+        ],
+      ),
+      body: directoryProvider.directoryPath == null
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Please select a logseq-pa directory.'),
+                  const SizedBox(height: 20),
+                  FilledButton.tonal(
+                    onPressed: () async {
+                      await context.read<DirectoryProvider>().selectDirectory();
+                      _loadRecordDirectories();
                     },
+                    child: const Text('Select Directory'),
+                  ),
+                ],
+              ),
+            )
+          : _records.isEmpty
+              ? const Center(
+                  child: Text('No records found in the selected directory.'))
+              : Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: ListView.builder(
+                      itemCount: _records.length,
+                      itemBuilder: (context, index) {
+                        final record = _records[index];
+                        return RecordListItem(
+                          record: record,
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RecordDetailPage(record: record),
+                              ),
+                            );
+                            _loadRecordDirectories(); // Refresh records after returning from RecordDetailPage
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
-              );
+    );
   }
 }

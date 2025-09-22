@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pa_recorder/directory_provider.dart';
 import 'package:pa_recorder/pages/new_record_page.dart';
 import 'package:pa_recorder/data/record_repository.dart'; // For Record class
 import 'package:pa_recorder/pages/edit_record_page.dart'; // For EditRecordPage
-import 'package:provider/provider.dart';
+import 'package:pa_recorder/pages/placeholder_page.dart';
+import 'package:gap/gap.dart';
 
 class AdaptiveNavigationScaffold extends StatefulWidget {
   final Widget child;
@@ -14,11 +14,18 @@ class AdaptiveNavigationScaffold extends StatefulWidget {
   });
 
   @override
-  State<AdaptiveNavigationScaffold> createState() => _AdaptiveNavigationScaffoldState();
+  State<AdaptiveNavigationScaffold> createState() =>
+      _AdaptiveNavigationScaffoldState();
 }
 
-class _AdaptiveNavigationScaffoldState extends State<AdaptiveNavigationScaffold> {
+class _AdaptiveNavigationScaffoldState
+    extends State<AdaptiveNavigationScaffold> {
   int _selectedIndex = 0;
+
+  late final List<Widget> _pages = <Widget>[
+    widget.child, // BrowseRecordsPage
+    const PlaceholderPage(title: 'Placeholder Page'),
+  ];
 
   Future<void> _handleNewRecordAction() async {
     final newRecord = await Navigator.push<Record?>(
@@ -48,18 +55,6 @@ class _AdaptiveNavigationScaffoldState extends State<AdaptiveNavigationScaffold>
         if (constraints.maxWidth > 600) {
           // Large screen: NavigationRail
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('PA Recorder'),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.folder_open),
-                  onPressed: () async {
-                    await context.read<DirectoryProvider>().selectDirectory();
-                    // The child (BrowseRecordsPage) will react to this change via its watch on DirectoryProvider.
-                  },
-                ),
-              ],
-            ),
             body: Row(
               children: [
                 NavigationRail(
@@ -68,14 +63,8 @@ class _AdaptiveNavigationScaffoldState extends State<AdaptiveNavigationScaffold>
                     setState(() {
                       _selectedIndex = index;
                     });
-                    if (index == 0) {
-                      // Browse Records
-                      // The child is already BrowseRecordsPage, so no explicit navigation needed here.
-                    } else if (index == 1) {
-                      // New Record
-                      _handleNewRecordAction();
-                    }
                   },
+                  groupAlignment: -1.0,
                   labelType: NavigationRailLabelType.all,
                   destinations: const [
                     NavigationRailDestination(
@@ -83,51 +72,40 @@ class _AdaptiveNavigationScaffoldState extends State<AdaptiveNavigationScaffold>
                       label: Text('Browse'),
                     ),
                     NavigationRailDestination(
-                      icon: Icon(Icons.add),
-                      label: Text('New Record'),
+                      icon: Icon(Icons.info), // Placeholder icon
+                      label: Text('Info'), // Placeholder label
                     ),
-                    // Add more destinations as needed
                   ],
+                  leading: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FloatingActionButton(
+                        onPressed: _handleNewRecordAction,
+                        elevation: 0.0,
+                        highlightElevation: 0.0,
+                        child: const Icon(Icons.add),
+                      ),
+                      const Gap(16), // Gap after FAB
+                    ],
+                  ),
                 ),
                 Expanded(
-                  child: widget.child,
+                  child: _pages[_selectedIndex],
                 ),
               ],
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: _handleNewRecordAction,
-              child: const Icon(Icons.add),
             ),
           );
         } else {
           // Small screen: BottomNavigationBar
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('PA Recorder'),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.folder_open),
-                  onPressed: () async {
-                    await context.read<DirectoryProvider>().selectDirectory();
-                    // The child (BrowseRecordsPage) will react to this change via its watch on DirectoryProvider.
-                  },
-                ),
-              ],
-            ),
-            body: widget.child,
+            body: _pages[_selectedIndex],
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _selectedIndex,
               onTap: (index) {
                 setState(() {
                   _selectedIndex = index;
                 });
-                if (index == 0) {
-                  // Browse Records
-                  // The child is already BrowseRecordsPage, so no explicit navigation needed here.
-                } else if (index == 1) {
-                  // New Record
-                  _handleNewRecordAction();
-                }
+                // No special action for index 1 (now Info page)
               },
               items: const [
                 BottomNavigationBarItem(
@@ -135,16 +113,16 @@ class _AdaptiveNavigationScaffoldState extends State<AdaptiveNavigationScaffold>
                   label: 'Browse',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.add),
-                  label: 'New Record',
+                  icon: Icon(Icons.info), // Placeholder icon
+                  label: 'Info', // Placeholder label
                 ),
-                // Add more items as needed
               ],
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: _handleNewRecordAction,
               child: const Icon(Icons.add),
             ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           );
         }
       },
