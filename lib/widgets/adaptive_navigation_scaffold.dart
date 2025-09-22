@@ -83,6 +83,7 @@ class _AdaptiveNavigationScaffoldState
                         onPressed: _handleNewRecordAction,
                         elevation: 0.0,
                         highlightElevation: 0.0,
+                        backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
                         child: const Icon(Icons.add),
                       ),
                       const Gap(16), // Gap after FAB
@@ -120,6 +121,7 @@ class _AdaptiveNavigationScaffoldState
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: _handleNewRecordAction,
+              backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
               child: const Icon(Icons.add),
             ),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
