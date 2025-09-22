@@ -99,22 +99,22 @@ class _AdaptiveNavigationScaffoldState
           // Small screen: BottomNavigationBar
           return Scaffold(
             body: _pages[_selectedIndex],
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: _selectedIndex,
-              onTap: (index) {
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: (index) {
                 setState(() {
                   _selectedIndex = index;
                 });
                 // No special action for index 1 (now Info page)
               },
-              items: const [
-                BottomNavigationBarItem(
+              destinations: const [
+                NavigationDestination(
                   icon: Icon(Icons.folder_open),
                   label: 'Browse',
                 ),
-                BottomNavigationBarItem(
+                NavigationDestination(
                   icon: Icon(Icons.info), // Placeholder icon
-                  label: 'Info', // Placeholder label
+                  label: 'Info',
                 ),
               ],
             ),
