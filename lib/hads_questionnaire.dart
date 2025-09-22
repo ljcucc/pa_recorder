@@ -125,29 +125,33 @@ class HADSQuestionnaireState extends State<HADSQuestionnaire> {
         const SizedBox(height: 10),
         Text(question.text),
         const SizedBox(height: 10),
-        ...shuffledChoices.map((choice) {
-          final score = choice['score'] as int;
-          final text = choice['text'] as String;
-          return ListTile(
-            title: Text(text),
-            leading: Radio<int>(
-              value: score,
-              groupValue: _answers[_currentQuestionIndex],
-              onChanged: (int? newValue) {
-                setState(() {
-                  _answers[_currentQuestionIndex] = newValue!;
-                  _nextQuestion();
-                });
-              },
-            ),
-            onTap: () {
-              setState(() {
-                _answers[_currentQuestionIndex] = score;
-                _nextQuestion();
-              });
-            },
-          );
-        }),
+        RadioGroup<int>(
+          groupValue: _answers[_currentQuestionIndex],
+          onChanged: (int? newValue) {
+            setState(() {
+              _answers[_currentQuestionIndex] = newValue!;
+              _nextQuestion();
+            });
+          },
+          child: Column(
+            children: shuffledChoices.map((choice) {
+              final score = choice['score'] as int;
+              final text = choice['text'] as String;
+              return ListTile(
+                title: Text(text),
+                leading: Radio<int>(
+                  value: score,
+                ),
+                onTap: () {
+                  setState(() {
+                    _answers[_currentQuestionIndex] = score;
+                    _nextQuestion();
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ),
       ],
     );
   }
