@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pa_recorder/pages/new_record_page.dart';
+import 'package:pa_recorder/pages/browse_records_page.dart';
 import 'package:pa_recorder/data/record_repository.dart'; // For Record class
 import 'package:pa_recorder/pages/edit_record_page.dart'; // For EditRecordPage
-import 'package:pa_recorder/pages/placeholder_page.dart';
+import 'package:pa_recorder/pages/welcome_page.dart';
+import 'package:pa_recorder/pages/settings_page.dart';
 import 'package:gap/gap.dart';
 
 class AdaptiveNavigationScaffold extends StatefulWidget {
-  final Widget child;
-
   const AdaptiveNavigationScaffold({
     super.key,
-    required this.child,
   });
 
   @override
@@ -23,8 +22,9 @@ class _AdaptiveNavigationScaffoldState
   int _selectedIndex = 0;
 
   late final List<Widget> _pages = <Widget>[
-    widget.child, // BrowseRecordsPage
-    const PlaceholderPage(title: 'Placeholder Page'),
+    const WelcomePage(),
+    const BrowseRecordsPage(),
+    const SettingsPage(),
   ];
 
   Future<void> _handleNewRecordAction() async {
@@ -68,12 +68,16 @@ class _AdaptiveNavigationScaffoldState
                   labelType: NavigationRailLabelType.all,
                   destinations: const [
                     NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text('Welcome'),
+                    ),
+                    NavigationRailDestination(
                       icon: Icon(Icons.folder_open),
                       label: Text('Browse'),
                     ),
                     NavigationRailDestination(
-                      icon: Icon(Icons.info), // Placeholder icon
-                      label: Text('Info'), // Placeholder label
+                      icon: Icon(Icons.settings),
+                      label: Text('Settings'),
                     ),
                   ],
                   leading: Column(
@@ -110,12 +114,16 @@ class _AdaptiveNavigationScaffoldState
               },
               destinations: const [
                 NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: 'Welcome',
+                ),
+                NavigationDestination(
                   icon: Icon(Icons.folder_open),
                   label: 'Browse',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.info), // Placeholder icon
-                  label: 'Info',
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
                 ),
               ],
             ),

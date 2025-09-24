@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pa_recorder/pages/browse_records_page.dart';
+
 import 'package:pa_recorder/directory_provider.dart';
 import 'package:pa_recorder/widgets/adaptive_navigation_scaffold.dart'; // New import
 
@@ -34,9 +34,7 @@ class PARecorderApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'JFOpenshuninn',
       ),
-      home: const AdaptiveNavigationScaffold(
-        child: BrowseRecordsPage(),
-      ),
+      home: const AdaptiveNavigationScaffold(),
     );
   }
 }
