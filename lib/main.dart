@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'package:pa_recorder/widgets/adaptive_navigation_scaffold.dart';
 import 'package:pa_recorder/data/record_repository.dart';
+import 'package:pa_recorder/pages/hello_page.dart';
+import 'package:pa_recorder/providers/hello_provider.dart';
 
 void main() {
   runApp(const AppInitializer());
@@ -13,7 +15,7 @@ class AppInitializer extends StatefulWidget {
   const AppInitializer({super.key});
 
   @override
-  _AppInitializerState createState() => _AppInitializerState();
+  State<AppInitializer> createState() => _AppInitializerState();
 }
 
 class _AppInitializerState extends State<AppInitializer> {
@@ -41,6 +43,9 @@ class _AppInitializerState extends State<AppInitializer> {
             providers: [
               Provider<RecordRepository>(
                 create: (context) => snapshot.data!,
+              ),
+              ChangeNotifierProvider(
+                create: (context) => HelloProvider(),
               ),
             ],
             child: const PARecorderApp(),
@@ -72,15 +77,19 @@ class PARecorderApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasHello = context.watch<HelloProvider>().hasHello;
     return MaterialApp(
       title: 'PA Recorder',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
+        useMaterial3: true,
         fontFamily: 'JFOpenshuninn',
       ),
-      home: const AdaptiveNavigationScaffold(),
+      initialRoute: hasHello ? '/' : HelloPage.routeName,
+      routes: {
+        '/': (context) => const AdaptiveNavigationScaffold(),
+        HelloPage.routeName: (context) => const HelloPage(),
+      },
     );
   }
 }
-
-

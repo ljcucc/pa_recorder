@@ -109,7 +109,7 @@ class DatabaseHelper {
     _database = db;
   }
 
-  _initDatabase() async {
+  Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), _databaseName);
     return await openDatabase(
       path,
