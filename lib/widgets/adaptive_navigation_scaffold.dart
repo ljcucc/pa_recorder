@@ -21,6 +21,17 @@ class _AdaptiveNavigationScaffoldState
     extends State<AdaptiveNavigationScaffold> {
   int _selectedIndex = 0;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newIndex = ModalRoute.of(context)?.settings.arguments;
+    if (newIndex is int && newIndex != _selectedIndex) {
+      setState(() {
+        _selectedIndex = newIndex;
+      });
+    }
+  }
+
   late final List<Widget> _pages = <Widget>[
     const WelcomePage(),
     const BrowseRecordsPage(),

@@ -37,7 +37,21 @@ class AppInitializer extends StatelessWidget {
           },
         ),
       ],
-      child: const PARecorderApp(),
+      child: Builder(
+        builder: (context) {
+          final helloProvider = Provider.of<HelloProvider>(context, listen: false);
+          return FutureBuilder(
+            future: helloProvider.initialized,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return const PARecorderApp();
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          );
+        },
+      ),
     );
   }
 }
