@@ -44,10 +44,12 @@ dependencies:
   provider: ^6.1.5+1
   shared_preferences: ^2.2.3
   gap: ^3.0.1
+  sqflite: ^2.3.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  sqflite_common_ffi: ^2.3.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
