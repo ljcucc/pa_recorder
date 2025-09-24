@@ -6,68 +6,38 @@ import 'package:pa_recorder/widgets/adaptive_navigation_scaffold.dart';
 import 'package:pa_recorder/data/record_repository.dart';
 import 'package:pa_recorder/pages/hello_page.dart';
 import 'package:pa_recorder/providers/hello_provider.dart';
+import 'package:pa_recorder/providers/storage_type_provider.dart';
+import 'package:pa_recorder/data/file_system_record_repository.dart';
+import 'package:pa_recorder/directory_provider.dart';
 
 void main() {
   runApp(const AppInitializer());
 }
 
-class AppInitializer extends StatefulWidget {
+class AppInitializer extends StatelessWidget {
   const AppInitializer({super.key});
 
   @override
-  State<AppInitializer> createState() => _AppInitializerState();
-}
-
-class _AppInitializerState extends State<AppInitializer> {
-  late Future<RecordRepository> _recordRepositoryFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _recordRepositoryFuture = _initRepository();
-  }
-
-  Future<RecordRepository> _initRepository() async {
-    final repository = SqliteRecordRepository();
-    await DatabaseHelper.instance.getDb(); // Ensure database is initialized
-    return repository;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<RecordRepository>(
-      future: _recordRepositoryFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return MultiProvider(
-            providers: [
-              Provider<RecordRepository>(
-                create: (context) => snapshot.data!,
-              ),
-              ChangeNotifierProvider(
-                create: (context) => HelloProvider(),
-              ),
-            ],
-            child: const PARecorderApp(),
-          );
-        } else if (snapshot.hasError) {
-          return MaterialApp(
-            home: Scaffold(
-              body: Center(
-                child: Text('Error initializing database: ${snapshot.error}'),
-              ),
-            ),
-          );
-        } else {
-          return const MaterialApp(
-            home: Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          );
-        }
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => HelloProvider()),
+        ChangeNotifierProvider(create: (_) => DirectoryProvider()),
+        ChangeNotifierProvider(create: (_) => StorageTypeProvider()),
+        ProxyProvider2<StorageTypeProvider, DirectoryProvider, RecordRepository>(
+          update: (context, storageTypeProvider, directoryProvider, previousRepository) {
+            if (storageTypeProvider.currentStorageType == StorageType.sqlite) {
+              // Initialize SQLite repository and ensure DB is ready
+              DatabaseHelper.instance.getDb(); // This ensures the DB is initialized
+              return SqliteRecordRepository();
+            } else {
+              // Initialize FileSystem repository
+              return FileSystemRecordRepository(directoryProvider);
+            }
+          },
+        ),
+      ],
+      child: const PARecorderApp(),
     );
   }
 }
