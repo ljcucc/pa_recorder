@@ -13,12 +13,10 @@ class AdaptiveNavigationScaffold extends StatefulWidget {
   });
 
   @override
-  State<AdaptiveNavigationScaffold> createState() =>
-      _AdaptiveNavigationScaffoldState();
+  State<AdaptiveNavigationScaffold> createState() => _AdaptiveNavigationScaffoldState();
 }
 
-class _AdaptiveNavigationScaffoldState
-    extends State<AdaptiveNavigationScaffold> {
+class _AdaptiveNavigationScaffoldState extends State<AdaptiveNavigationScaffold> {
   int _selectedIndex = 0;
 
   @override

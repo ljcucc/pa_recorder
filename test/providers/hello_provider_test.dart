@@ -6,7 +6,7 @@ void main() {
   group('HelloProvider', () {
     setUp(() {
       // Reset SharedPreferences mock before each test
-      SharedPreferences.setMockInitialValues({}); 
+      SharedPreferences.setMockInitialValues({});
     });
 
     test('hasHello should be false by default if no value is stored', () async {

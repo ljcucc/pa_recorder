@@ -17,24 +17,18 @@ class FileSystemRecordRepository implements RecordRepository {
     if (_logseqPaPath == null) {
       return []; // No directory selected
     }
-    final recordsDir =
-        Directory(p.join(_logseqPaPath!, 'assets', 'pa-records'));
+    final recordsDir = Directory(p.join(_logseqPaPath!, 'assets', 'pa-records'));
     if (!await recordsDir.exists()) {
       return [];
     }
 
-    final directories = await recordsDir
-        .list()
-        .where((item) => item is Directory)
-        .cast<Directory>()
-        .toList();
+    final directories = await recordsDir.list().where((item) => item is Directory).cast<Directory>().toList();
 
     final List<Record> records = [];
     for (final dir in directories) {
       final id = dir.uri.pathSegments.where((e) => e.isNotEmpty).last;
       final iniFile = File(p.join(dir.path, 'index.ini'));
-      final contentFile =
-          File(p.join(dir.path, 'pa-records___${id}___content.md'));
+      final contentFile = File(p.join(dir.path, 'pa-records___${id}___content.md'));
 
       String title = id; // Default title
       Map<String, Map<String, String>> metadata = {};
@@ -80,8 +74,7 @@ class FileSystemRecordRepository implements RecordRepository {
     }
 
     final iniFile = File(p.join(recordDir.path, 'index.ini'));
-    final contentFile =
-        File(p.join(recordDir.path, 'pa-records___${id}___content.md'));
+    final contentFile = File(p.join(recordDir.path, 'pa-records___${id}___content.md'));
 
     String title = id;
     Map<String, Map<String, String>> metadata = {};
@@ -117,8 +110,7 @@ class FileSystemRecordRepository implements RecordRepository {
     if (_logseqPaPath == null) {
       throw Exception('Logseq PA directory not selected.');
     }
-    final outputDir =
-        Directory(p.join(_logseqPaPath!, 'assets', 'pa-records', record.id));
+    final outputDir = Directory(p.join(_logseqPaPath!, 'assets', 'pa-records', record.id));
     await outputDir.create(recursive: true);
 
     final iniFile = File(p.join(outputDir.path, 'index.ini'));
@@ -131,8 +123,7 @@ class FileSystemRecordRepository implements RecordRepository {
     });
     await iniFile.writeAsString(buffer.toString());
 
-    final contentFile =
-        File(p.join(outputDir.path, 'pa-records___${record.id}___content.md'));
+    final contentFile = File(p.join(outputDir.path, 'pa-records___${record.id}___content.md'));
     await contentFile.writeAsString(record.content);
   }
 
@@ -142,8 +133,7 @@ class FileSystemRecordRepository implements RecordRepository {
       throw Exception('Logseq PA directory not selected.');
     }
     final recordDirPath = p.join(_logseqPaPath!, 'assets', 'pa-records', id);
-    final contentFile =
-        File(p.join(recordDirPath, 'pa-records___${id}___content.md'));
+    final contentFile = File(p.join(recordDirPath, 'pa-records___${id}___content.md'));
     if (await contentFile.exists()) {
       await contentFile.writeAsString(content);
     } else {

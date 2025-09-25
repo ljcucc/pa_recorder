@@ -36,8 +36,7 @@ class RecordDetailPageState extends State<RecordDetailPage> {
     if (result == true) {
       if (!mounted) return; // Add this check
       final recordRepository = context.read<RecordRepository>();
-      final updatedRecord =
-          await recordRepository.getRecordById(widget.record.id);
+      final updatedRecord = await recordRepository.getRecordById(widget.record.id);
       if (updatedRecord != null && mounted) {
         setState(() {
           _properties = updatedRecord.metadata['properties'] ?? {};
@@ -57,8 +56,7 @@ class RecordDetailPageState extends State<RecordDetailPage> {
         onRefresh: () async {
           if (!mounted) return; // Add this check
           final recordRepository = context.read<RecordRepository>();
-          final updatedRecord =
-              await recordRepository.getRecordById(widget.record.id);
+          final updatedRecord = await recordRepository.getRecordById(widget.record.id);
           if (updatedRecord != null && mounted) {
             setState(() {
               _properties = updatedRecord.metadata['properties'] ?? {};

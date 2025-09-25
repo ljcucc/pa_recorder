@@ -51,8 +51,7 @@ class _HelloPageState extends State<HelloPage> {
                   ElevatedButton(
                     onPressed: () async {
                       final navigator = Navigator.of(context);
-                      await Provider.of<HelloProvider>(context, listen: false)
-                          .setHasHello(true);
+                      await Provider.of<HelloProvider>(context, listen: false).setHasHello(true);
                       if (!mounted) return;
                       navigator.pushReplacementNamed('/');
                     },

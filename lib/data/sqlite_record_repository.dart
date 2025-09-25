@@ -31,7 +31,7 @@ class SqliteRecordRepository implements RecordRepository {
   Future<List<Record>> getAllRecords() async {
     final db = await _dbHelper.getDb();
     final List<Map<String, dynamic>> recordMaps = await db.query('records');
-    
+
     final List<Record> records = [];
     for (final recordMap in recordMaps) {
       final record = await _mapToRecord(db, recordMap);

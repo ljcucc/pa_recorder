@@ -22,31 +22,13 @@ class NewRecordPageState extends State<NewRecordPage> {
   Map<String, int>? _hadsScores;
   bool _showHads = false;
 
-  final Map<String, String> _moodScale = {
-    "1": "非常愉快",
-    "2": "愉快",
-    "3": "有點愉快",
-    "4": "中性",
-    "5": "有點不愉快",
-    "6": "不愉快",
-    "7": "非常不愉快"
-  };
+  final Map<String, String> _moodScale = {"1": "非常愉快", "2": "愉快", "3": "有點愉快", "4": "中性", "5": "有點不愉快", "6": "不愉快", "7": "非常不愉快"};
 
   final List<String> _pleasantEmotions = ["開心", "興奮", "感激", "平靜", "滿足", "充滿希望"];
   final List<String> _neutralEmotions = ["淡定", "放鬆", "無聊", "平靜"];
   final List<String> _unpleasantEmotions = ["傷心", "憤怒", "焦慮", "擔憂", "疲憊", "失望"];
 
-  final List<String> _factors = [
-    "工作",
-    "家庭",
-    "健康",
-    "人際關係",
-    "金錢",
-    "天氣",
-    "休閒活動",
-    "學校",
-    "其他"
-  ];
+  final List<String> _factors = ["工作", "家庭", "健康", "人際關係", "金錢", "天氣", "休閒活動", "學校", "其他"];
 
   List<String> get _currentEmotions {
     if (_mood == null) {

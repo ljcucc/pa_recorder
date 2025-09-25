@@ -100,8 +100,7 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
               ),
             )
           : _records.isEmpty
-              ? const Center(
-                  child: Text('No records found in the selected directory.'))
+              ? const Center(child: Text('No records found in the selected directory.'))
               : Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 800),
@@ -115,8 +114,7 @@ class BrowseRecordsPageState extends State<BrowseRecordsPage> {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    RecordDetailPage(record: record),
+                                builder: (context) => RecordDetailPage(record: record),
                               ),
                             );
                             _loadRecordDirectories(); // Refresh records after returning from RecordDetailPage
