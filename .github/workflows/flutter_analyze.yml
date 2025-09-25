@@ -1,28 +1,35 @@
-name: Flutter Static Analysis
-
+name: Flutter Analyze
 on:
   push:
-    branches:
-      - main # or 'master', 'develop', etc.
-
+    branches: [main]
+  pull_request:
+    branches: [main]
+env:
+  FLUTTER_VERSION: "3.35.4"
 jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+      - name: Dependencies
+        run: flutter pub get
+      - name: Check format
+        run: dart format --line-length 150 --set-exit-if-changed lib test
   analyze:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable' # Or 'beta', 'dev'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
           cache: true
-
-      
-
-      - name: Install Dependencies
+      - name: Dependencies
         run: flutter pub get
-
-      - name: Run Flutter Analyze
+      - name: Analyze
         run: flutter analyze
